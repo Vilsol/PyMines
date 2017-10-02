@@ -1,5 +1,7 @@
 from random import randint
 import tkinter
+import os
+
 
 rows = 8
 columns = 8
@@ -132,22 +134,23 @@ def launch_game():
     root.title("Mines")
     root.resizable(width=False,height=False)
 
-    images["counts"]["1"] = (tkinter.PhotoImage(file="images/tile_1.gif"))
-    images["counts"]["2"] = (tkinter.PhotoImage(file="images/tile_2.gif"))
-    images["counts"]["3"] = (tkinter.PhotoImage(file="images/tile_3.gif"))
-    images["counts"]["4"] = (tkinter.PhotoImage(file="images/tile_4.gif"))
-    images["counts"]["5"] = (tkinter.PhotoImage(file="images/tile_5.gif"))
-    images["counts"]["6"] = (tkinter.PhotoImage(file="images/tile_6.gif"))
-    images["counts"]["7"] = (tkinter.PhotoImage(file="images/tile_7.gif"))
-    images["counts"]["8"] = (tkinter.PhotoImage(file="images/tile_8.gif"))
+    dir = os.path.dirname(__file__)
+    images["counts"]["1"] = (tkinter.PhotoImage(file=dir + "/images/tile_1.gif"))
+    images["counts"]["2"] = (tkinter.PhotoImage(file=dir + "/images/tile_2.gif"))
+    images["counts"]["3"] = (tkinter.PhotoImage(file=dir + "/images/tile_3.gif"))
+    images["counts"]["4"] = (tkinter.PhotoImage(file=dir + "/images/tile_4.gif"))
+    images["counts"]["5"] = (tkinter.PhotoImage(file=dir + "/images/tile_5.gif"))
+    images["counts"]["6"] = (tkinter.PhotoImage(file=dir + "/images/tile_6.gif"))
+    images["counts"]["7"] = (tkinter.PhotoImage(file=dir + "/images/tile_7.gif"))
+    images["counts"]["8"] = (tkinter.PhotoImage(file=dir + "/images/tile_8.gif"))
 
-    images["clicked"] = tkinter.PhotoImage(file="images/tile_clicked.gif")
-    images["flag"] = tkinter.PhotoImage(file="images/tile_flag.gif")
-    images["mine"] = tkinter.PhotoImage(file="images/tile_mine.gif")
-    images["plain"] = tkinter.PhotoImage(file="images/tile_plain.gif")
+    images["clicked"] = tkinter.PhotoImage(file=dir + "/images/tile_clicked.gif")
+    images["flag"] = tkinter.PhotoImage(file=dir + "/images/tile_flag.gif")
+    images["mine"] = tkinter.PhotoImage(file=dir + "/images/tile_mine.gif")
+    images["plain"] = tkinter.PhotoImage(file=dir + "/images/tile_plain.gif")
 
-    images["face_normal"] = tkinter.PhotoImage(file="images/face_normal.png")
-    images["face_dead"] = tkinter.PhotoImage(file="images/face_dead.png")
+    images["face_normal"] = tkinter.PhotoImage(file=dir + "/images/face_normal.png")
+    images["face_dead"] = tkinter.PhotoImage(file=dir + "/images/face_dead.png")
 
     mine_potential = []
     for row in range(rows):
@@ -180,6 +183,10 @@ def launch_game():
     root.update()
     root.deiconify()
     root.mainloop()
+
+
+def execute():
+    launch_game()
 
 
 if __name__ == '__main__':
