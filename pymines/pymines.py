@@ -227,6 +227,23 @@ def launch_game():
 
     w.grid(row=0, column=0, columnspan=3, pady=5)
 
+    version = tkinter.Label(
+        text="v1.0.2",
+        background="white",
+        activebackground="white",
+        activeforeground="white",
+        disabledforeground="white",
+        highlightbackground="white",
+        highlightcolor="white",
+        highlightthickness=0,
+        borderwidth=0,
+        padx=0,
+        pady=0,
+        font=("Arial", 7)
+    )
+
+    version.grid(row=0, column=5, columnspan=3, pady=5)
+
     root.config(background="white")
 
     root.bind("<F2>", press_f2)
