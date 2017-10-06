@@ -1,30 +1,20 @@
 from random import randint
-import tkinter
 import os
+import pygame
 
 
 rows = 8
 columns = 8
 mine_count = 10
-buttons = {}
-images = {"counts": {}}
-
 exploded = False
 mines = []
-normal_color = "SystemButtonFace"
 revealed = []
 flagged = []
-face = None
+_image_library = {}
+grid = [[]] * rows
 
-
-def game_over():
-    global buttons
-
-    face.config(image=images["face_dead"])
-
-    for row in range(rows):
-        for col in range(columns):
-            buttons[row][col].config(background="red")
+for row in range(rows):
+    grid[row] = [-1] * columns
 
 
 def count_bombs_around(row, col):
@@ -53,64 +43,52 @@ def count_bombs_around(row, col):
 
 
 def click_tile(row, col):
-    def click():
-        global buttons, exploded
+    global exploded
 
-        if (row, col) in flagged:
-            return
+    if (row, col) in flagged:
+        return
 
-        if exploded:
-            return
+    if exploded:
+        return
 
-        if (row, col) in mines:
-            buttons[row][col].config(image=images["mine"])
-            exploded = True
-            game_over()
-            return
+    if (row, col) in mines:
+        grid[row][col] = -3
+        exploded = True
+        return
 
-        revealed.append((row, col))
+    revealed.append((row, col))
 
-        bombs = count_bombs_around(row, col)
+    bombs = count_bombs_around(row, col)
 
-        if bombs > 0:
-            buttons[row][col].config(image=images["counts"][str(bombs)])
-        else:
-            buttons[row][col].config(image=images["clicked"])
-
-    return click
+    grid[row][col] = bombs
 
 
 def toggle_flag(row, col):
-    def click(e):
-        if exploded:
-            return
+    if exploded:
+        return
 
-        if (row, col) not in revealed:
-            if (row, col) not in flagged:
-                flagged.append((row, col))
-                buttons[row][col].config(image=images["flag"])
-            else:
-                flagged.remove((row, col))
-                buttons[row][col].config(image=images["plain"])
-
-    return click
+    if (row, col) not in revealed:
+        if (row, col) not in flagged:
+            flagged.append((row, col))
+            grid[row][col] = -2
+        else:
+            flagged.remove((row, col))
+            grid[row][col] = -1
 
 
 def new_game():
-    global buttons, mines, exploded, normal_color
+    global mines, exploded, grid
 
     mines.clear()
     revealed.clear()
 
     for row in range(rows):
-        for col in range(columns):
-            buttons[row][col].config(background=normal_color)
+        grid[row] = [-1] * columns
 
     mine_potential = []
     for row in range(rows):
         for col in range(columns):
             mine_potential.append((row, col))
-            buttons[row][col].config(image=images["plain"])
 
     for i in range(mine_count):
         chosen = mine_potential[randint(0, len(mine_potential) - 1)]
@@ -119,139 +97,120 @@ def new_game():
 
     exploded = False
 
-    face.config(image=images["face_normal"])
+
+def get_image(path):
+    global _image_library
+    image = _image_library.get(path)
+    if image is None:
+        canonicalized_path = path.replace('/', os.sep).replace('\\', os.sep)
+        image = pygame.image.load(canonicalized_path)
+        _image_library[path] = image
+    return image
 
 
-def press_f2(e):
-    new_game()
+def mouse_in(mouse, min, max):
+    if min[0] <= mouse[0] <= max[0]:
+        if min[1] <= mouse[1] <= max[1]:
+            return True
+
+    return False
 
 
 def launch_game():
-    global images, buttons, normal_color, face
+    global grid, exploded
 
-    root = tkinter.Tk()
+    new_game()
 
-    root.title("Mines")
-    root.resizable(width=False, height=False)
-
+    pygame.init()
+    screen = pygame.display.set_mode((180, 208))
+    done = False
+    clock = pygame.time.Clock()
     dir = os.path.dirname(__file__)
-    images["counts"]["1"] = (tkinter.PhotoImage(file=dir + "/images/tile_1.gif"))
-    images["counts"]["2"] = (tkinter.PhotoImage(file=dir + "/images/tile_2.gif"))
-    images["counts"]["3"] = (tkinter.PhotoImage(file=dir + "/images/tile_3.gif"))
-    images["counts"]["4"] = (tkinter.PhotoImage(file=dir + "/images/tile_4.gif"))
-    images["counts"]["5"] = (tkinter.PhotoImage(file=dir + "/images/tile_5.gif"))
-    images["counts"]["6"] = (tkinter.PhotoImage(file=dir + "/images/tile_6.gif"))
-    images["counts"]["7"] = (tkinter.PhotoImage(file=dir + "/images/tile_7.gif"))
-    images["counts"]["8"] = (tkinter.PhotoImage(file=dir + "/images/tile_8.gif"))
 
-    images["clicked"] = tkinter.PhotoImage(file=dir + "/images/tile_clicked.gif")
-    images["flag"] = tkinter.PhotoImage(file=dir + "/images/tile_flag.gif")
-    images["mine"] = tkinter.PhotoImage(file=dir + "/images/tile_mine.gif")
-    images["plain"] = tkinter.PhotoImage(file=dir + "/images/tile_plain.gif")
+    font = pygame.font.SysFont("Arial", 12)
+    f2_to_reset = font.render("F2 = Reset", True, (0, 0, 0))
+    version_number = font.render("v1.1.0", True, (0, 0, 0))
 
-    images["face_normal"] = tkinter.PhotoImage(file=dir + "/images/face_normal.png")
-    images["face_dead"] = tkinter.PhotoImage(file=dir + "/images/face_dead.png")
+    offset_x = 5
+    offset_y = 33
 
-    mine_potential = []
-    for row in range(rows):
-        buttons[row] = {}
-        for col in range(columns):
-            mine_potential.append((row, col))
+    space = 6
+    icon = 16
 
-            button = tkinter.Button(
-                image=images["plain"],
-                command=click_tile(row, col),
-                relief="flat",
-                background="white",
-                activebackground="white",
-                activeforeground="white",
-                disabledforeground="white",
-                highlightbackground="white",
-                highlightcolor="white",
-                highlightthickness=0,
-                anchor="nw",
-                borderwidth=2,
-                width=16,
-                height=16,
-                padx=2,
-                pady=2
-            )
+    while not done:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
 
-            button.grid(row=row + 1, column=col)
-            button.bind("<Button-3>", toggle_flag(row, col))
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_F2:
+                    new_game()
 
-            normal_color = button.cget("background")
+            if event.type == pygame.MOUSEBUTTONUP:
+                if mouse_in(event.pos, (82, 8), (99, 25)):
+                    new_game()
 
-            buttons[row][col] = button
+                for row in range(rows):
+                    r = offset_y + (row * (space + icon))
+                    r2 = offset_y + (row * (space + icon)) + icon
+                    for col in range(columns):
+                        c = offset_x + (col * (space + icon))
+                        c2 = offset_x + (col * (space + icon)) + icon
+                        if mouse_in(event.pos, (c, r), (c2, r2)):
+                            if event.button == 1:
+                                click_tile(row, col)
+                            elif event.button == 3:
+                                toggle_flag(row, col)
 
-    for i in range(mine_count):
-        chosen = mine_potential[randint(0, len(mine_potential) - 1)]
-        mines.append(chosen)
-        mine_potential.remove(chosen)
+        if exploded:
+            screen.fill((250, 0, 0))
+            screen.blit(get_image(dir + "/images/face_dead.png"), (82, 8))
+        else:
+            screen.fill((250, 250, 250))
+            screen.blit(get_image(dir + "/images/face_normal.png"), (82, 8))
 
-    face = tkinter.Button(
-        image=images["face_normal"],
-        command=new_game,
-        relief="flat",
-        background="white",
-        activebackground="white",
-        activeforeground="white",
-        disabledforeground="white",
-        highlightbackground="white",
-        highlightcolor="white",
-        highlightthickness=0,
-        anchor="nw",
-        borderwidth=2,
-        width=16,
-        height=16,
-        padx=2,
-        pady=2
-    )
+        screen.blit(f2_to_reset, (10, 10))
+        screen.blit(version_number, (125, 10))
 
-    face.grid(row=0, column=3, columnspan=2, pady=5)
+        for row in range(rows):
+            for col in range(columns):
+                tile = grid[row][col]
 
-    w = tkinter.Label(
-        text="F2 = Reset",
-        background="white",
-        activebackground="white",
-        activeforeground="white",
-        disabledforeground="white",
-        highlightbackground="white",
-        highlightcolor="white",
-        highlightthickness=0,
-        borderwidth=0,
-        padx=0,
-        pady=0,
-        font=("Arial", 7)
-    )
+                if tile == -3:
+                    image = get_image(dir + "/images/tile_mine.png")
+                elif tile == -2:
+                    image = get_image(dir + "/images/tile_flag.png")
+                elif tile == -1:
+                    image = get_image(dir + "/images/tile_plain.png")
+                elif tile == 0:
+                    image = get_image(dir + "/images/tile_clicked.png")
+                elif tile == 1:
+                    image = get_image(dir + "/images/tile_1.png")
+                elif tile == 2:
+                    image = get_image(dir + "/images/tile_2.png")
+                elif tile == 3:
+                    image = get_image(dir + "/images/tile_3.png")
+                elif tile == 4:
+                    image = get_image(dir + "/images/tile_4.png")
+                elif tile == 5:
+                    image = get_image(dir + "/images/tile_5.png")
+                elif tile == 6:
+                    image = get_image(dir + "/images/tile_6.png")
+                elif tile == 7:
+                    image = get_image(dir + "/images/tile_7.png")
+                else:
+                    image = get_image(dir + "/images/tile_8.png")
 
-    w.grid(row=0, column=0, columnspan=3, pady=5)
+                screen.blit(
+                    image,
+                    (
+                        offset_x + (col * (space + icon)),
+                        offset_y + (row * (space + icon))
+                    )
+                )
 
-    version = tkinter.Label(
-        text="v1.0.2",
-        background="white",
-        activebackground="white",
-        activeforeground="white",
-        disabledforeground="white",
-        highlightbackground="white",
-        highlightcolor="white",
-        highlightthickness=0,
-        borderwidth=0,
-        padx=0,
-        pady=0,
-        font=("Arial", 7)
-    )
-
-    version.grid(row=0, column=5, columnspan=3, pady=5)
-
-    root.config(background="white")
-
-    root.bind("<F2>", press_f2)
-
-    root.iconify()
-    root.update()
-    root.deiconify()
-    root.mainloop()
+        pygame.display.flip()
+        clock.tick(60)
 
 
 def execute():
