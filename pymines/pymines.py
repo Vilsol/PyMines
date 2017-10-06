@@ -132,7 +132,7 @@ def launch_game():
     root = tkinter.Tk()
 
     root.title("Mines")
-    root.resizable(width=False,height=False)
+    root.resizable(width=False, height=False)
 
     dir = os.path.dirname(__file__)
     images["counts"]["1"] = (tkinter.PhotoImage(file=dir + "/images/tile_1.gif"))
@@ -158,7 +158,25 @@ def launch_game():
         for col in range(columns):
             mine_potential.append((row, col))
 
-            button = tkinter.Button(image=images["plain"], command=click_tile(row, col), relief="flat")
+            button = tkinter.Button(
+                image=images["plain"],
+                command=click_tile(row, col),
+                relief="flat",
+                background="white",
+                activebackground="white",
+                activeforeground="white",
+                disabledforeground="white",
+                highlightbackground="white",
+                highlightcolor="white",
+                highlightthickness=0,
+                anchor="nw",
+                borderwidth=2,
+                width=16,
+                height=16,
+                padx=2,
+                pady=2
+            )
+
             button.grid(row=row + 1, column=col)
             button.bind("<Button-3>", toggle_flag(row, col))
 
@@ -171,11 +189,45 @@ def launch_game():
         mines.append(chosen)
         mine_potential.remove(chosen)
 
-    face = tkinter.Button(image=images["face_normal"], command=new_game)
+    face = tkinter.Button(
+        image=images["face_normal"],
+        command=new_game,
+        relief="flat",
+        background="white",
+        activebackground="white",
+        activeforeground="white",
+        disabledforeground="white",
+        highlightbackground="white",
+        highlightcolor="white",
+        highlightthickness=0,
+        anchor="nw",
+        borderwidth=2,
+        width=16,
+        height=16,
+        padx=2,
+        pady=2
+    )
+
     face.grid(row=0, column=3, columnspan=2, pady=5)
 
-    w = tkinter.Label(text="F2 = Reset")
+    w = tkinter.Label(
+        text="F2 = Reset",
+        background="white",
+        activebackground="white",
+        activeforeground="white",
+        disabledforeground="white",
+        highlightbackground="white",
+        highlightcolor="white",
+        highlightthickness=0,
+        borderwidth=0,
+        padx=0,
+        pady=0,
+        font=("Arial", 7)
+    )
+
     w.grid(row=0, column=0, columnspan=3, pady=5)
+
+    root.config(background="white")
 
     root.bind("<F2>", press_f2)
 
