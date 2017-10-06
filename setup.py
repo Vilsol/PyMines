@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name='PyMines',
-      version='1.1.0',
+      version='1.1.1',
       description='Very simple minesweeper game',
       author='Vilsol',
       author_email='me@vil.so',

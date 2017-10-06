@@ -123,13 +123,14 @@ def launch_game():
 
     pygame.init()
     screen = pygame.display.set_mode((180, 208))
+    pygame.display.set_caption('PyMines')
     done = False
     clock = pygame.time.Clock()
     dir = os.path.dirname(__file__)
 
     font = pygame.font.SysFont("Arial", 12)
     f2_to_reset = font.render("F2 = Reset", True, (0, 0, 0))
-    version_number = font.render("v1.1.0", True, (0, 0, 0))
+    version_number = font.render("v1.1.1", True, (0, 0, 0))
 
     offset_x = 5
     offset_y = 33
