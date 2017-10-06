@@ -45,10 +45,13 @@ def count_bombs_around(row, col):
 def click_tile(row, col):
     global exploded
 
+    if exploded:
+        return
+
     if (row, col) in flagged:
         return
 
-    if exploded:
+    if (row, col) in revealed:
         return
 
     if (row, col) in mines:
@@ -61,6 +64,29 @@ def click_tile(row, col):
     bombs = count_bombs_around(row, col)
 
     grid[row][col] = bombs
+
+    if bombs == 0:
+        up = row > 0
+        down = row < rows - 1
+        left = col > 0
+        right = col < columns - 1
+
+        if up:
+            click_tile(row - 1, col)
+        if down:
+            click_tile(row + 1, col)
+        if left:
+            click_tile(row, col - 1)
+        if right:
+            click_tile(row, col + 1)
+        if up and left:
+            click_tile(row - 1, col - 1)
+        if up and right:
+            click_tile(row - 1, col + 1)
+        if down and left:
+            click_tile(row + 1, col - 1)
+        if down and right:
+            click_tile(row + 1, col + 1)
 
 
 def toggle_flag(row, col):
@@ -130,7 +156,7 @@ def launch_game():
 
     font = pygame.font.SysFont("Arial", 12)
     f2_to_reset = font.render("F2 = Reset", True, (0, 0, 0))
-    version_number = font.render("v1.1.1", True, (0, 0, 0))
+    version_number = font.render("v1.2.0", True, (0, 0, 0))
 
     offset_x = 5
     offset_y = 33
