@@ -156,7 +156,7 @@ def launch_game():
 
     font = pygame.font.SysFont("Arial", 12)
     f2_to_reset = font.render("F2 = Reset", True, (0, 0, 0))
-    version_number = font.render("v1.2.0", True, (0, 0, 0))
+    version_number = font.render("v1.2.1", True, (0, 0, 0))
 
     offset_x = 5
     offset_y = 33
@@ -237,7 +237,7 @@ def launch_game():
                 )
 
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(30)
 
 
 def execute():
