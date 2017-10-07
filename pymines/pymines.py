@@ -148,6 +148,8 @@ def launch_game():
     new_game()
 
     pygame.init()
+    pygame.mixer.quit()
+
     screen = pygame.display.set_mode((180, 208))
     pygame.display.set_caption('PyMines')
     done = False
@@ -156,7 +158,7 @@ def launch_game():
 
     font = pygame.font.SysFont("Arial", 12)
     f2_to_reset = font.render("F2 = Reset", True, (0, 0, 0))
-    version_number = font.render("v1.2.1", True, (0, 0, 0))
+    version_number = font.render("v1.2.2", True, (0, 0, 0))
 
     offset_x = 5
     offset_y = 33
