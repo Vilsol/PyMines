@@ -158,7 +158,7 @@ def launch_game():
 
     font = pygame.font.SysFont("Arial", 12)
     f2_to_reset = font.render("F2 = Reset", True, (0, 0, 0))
-    version_number = font.render("v1.2.2", True, (0, 0, 0))
+    version_number = font.render("v1.2.3", True, (0, 0, 0))
 
     offset_x = 5
     offset_y = 33
@@ -175,7 +175,7 @@ def launch_game():
                 if event.key == pygame.K_F2:
                     new_game()
 
-            if event.type == pygame.MOUSEBUTTONUP:
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 if mouse_in(event.pos, (82, 8), (99, 25)):
                     new_game()
 
